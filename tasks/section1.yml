@@ -162,7 +162,7 @@
       - filesystems
       - rule_1.1.1.5
 
-- name: "SCORED | 1.1.1.6 | PATCH | Ensure mounting of udf filesystems is disabled"
+- name: "SCORED | 1.1.1.7 | PATCH | Ensure mounting of udf filesystems is disabled"
   lineinfile:
       dest: /etc/modprobe.d/CIS.conf
       regexp: "^(#)?install udf(\\s|$)"
@@ -170,21 +170,21 @@
       state: present
       create: true
   when:
-      - ubuntu2004cis_rule_1_1_1_6
+      - ubuntu2004cis_rule_1_1_1_7
   tags:
       - level1
       - scored
       - patch
       - udf
       - filesystems
-      - rule_1.1.1.6
+      - rule_1.1.1.7
 
-- name: "SCORED | 1.1.1.6 | PATCH | Remove udf module"
+- name: "SCORED | 1.1.1.7 | PATCH | Remove udf module"
   modprobe:
       name: udf
       state: absent
   when:
-      - ubuntu2004cis_rule_1_1_1_6
+      - ubuntu2004cis_rule_1_1_1_7
       - not ubuntu2004cis_skip_for_travis
   tags:
       - level1
@@ -192,7 +192,7 @@
       - patch
       - udf
       - filesystems
-      - rule_1.1.1.6
+      - rule_1.1.1.7
 
 - name: "NOTSCORED | 1.1.1.7 | PATCH | Ensure mounting of FAT filesystems is limited"
   lineinfile:
@@ -226,7 +226,7 @@
       - filesystems
       - rule_1.1.1.7
 
-- name: "SCORED | 1.1.2 | PATCH | Ensure separate partition exists for /tmp | enable and start/restart tmp.mount"
+- name: "SCORED | 1.1.2 | PATCH | Ensure /tmp is configured | enable and start/restart tmp.mount"
   copy:
       src: "{{ tmp_mount_file[ansible_os_family] }}"
       dest: /etc/systemd/system/tmp.mount
@@ -246,7 +246,7 @@
       - patch
       - rule_1.1.2
 
-- name: "SCORED | 1.1.2 | PATCH | Ensure separate partition exists for /tmp | enable and start/restart tmp.mount"
+- name: "SCORED | 1.1.2 | PATCH | Ensure /tmp is configured | enable and start/restart tmp.mount"
   systemd:
       name: tmp.mount
       daemon_reload: yes
@@ -415,7 +415,7 @@
       - rule_1.1.17
       - skip_ansible_lint
 
-- name: "SCORED | 1.1.18 | PATCH | Ensure nodev option set on /home partition"
+- name: "SCORED | 1.1.18 | PATCH | Ensure /home partition includes the nodev option"
   mount:
       name: "/home"
       src: "{{ item.device }}"
@@ -661,7 +661,7 @@
       - patch
       - rule_1.4.1
 
-- name: "SCORED | 1.4.2 | PATCH | Ensure filesystem integrity is regularly checked"
+- name: "SCORED | 1.3.2 | PATCH | Ensure filesystem integrity is regularly checked"
   cron:
       name: Run AIDE integrity check weekly
       cron_file: "{{ ubuntu2004cis_aide_cron['cron_file'] }}"
@@ -673,16 +673,16 @@
       weekday: "{{ ubuntu2004cis_aide_cron['aide_weekday'] | default('*') }}"
       job: "{{ ubuntu2004cis_aide_cron['aide_job'] }}"
   when:
-      - ubuntu2004cis_rule_1_4_2
+      - ubuntu2004cis_rule_1_3_2
   tags:
       - level1
       - scored
       - aide
       - file_integrity
       - patch
-      - rule_1.4.2
+      - rule_1.3.2
 
-- name: "SCORED | 1.5.1 | PATCH | Ensure bootloader password is set - generate password"
+- name: "SCORED | 1.4.2 | PATCH | Ensure bootloader password is set - generate password"
   shell: "set -o pipefail;
         if [ '{{ ubuntu2004cis_bootloader_password }}' == 'random' ];
         then PASSWORD=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c12); else PASSWORD='{{ ubuntu2004cis_bootloader_password }}';
@@ -693,15 +693,15 @@
       executable: /bin/bash
   when:
       - ubuntu2004cis_set_boot_pass
-      - ubuntu2004cis_rule_1_5_1
+      - ubuntu2004cis_rule_1_4_2
   tags:
       - level1
       - scored
       - grub
       - patch
-      - rule_1.5.1
+      - rule_1.4.2
 
-- name: "SCORED | 1.5.1 | PATCH | Ensure bootloader password is set - generate config"
+- name: "SCORED | 1.4.2 | PATCH | Ensure bootloader password is set - generate config"
   copy:
       dest: /etc/grub.d/00_password
       content: "cat << EOF\nset superusers=\"root\"\npassword_pbkdf2 root {{ grub_pass.stdout }}\nEOF"
@@ -711,13 +711,13 @@
   notify: generate new grub config
   when:
       - ubuntu2004cis_set_boot_pass and grub_pass is defined and grub_pass.stdout is defined and grub_pass.stdout | length >0
-      - ubuntu2004cis_rule_1_5_1
+      - ubuntu2004cis_rule_1_4_2
   tags:
       - level1
       - scored
       - grub
       - patch
-      - rule_1.5.1
+      - rule_1.4.2
 
 - name: "SCORED | 1.5.1 | PATCH | Ensure bootloader password is set - disable password for system boot"
   replace:
@@ -736,7 +736,7 @@
       - patch
       - rule_1.5.1
 
-- name: "SCORED | 1.5.2 | PATCH | Ensure permissions on bootloader config are configured for grub.cfg"
+- name: "SCORED | 1.4.3 | PATCH | Ensure permissions on bootloader config are configured for grub.cfg"
   file:
       path: "/boot/grub/grub.cfg"
       owner: root
@@ -744,15 +744,15 @@
       mode: 0400
   when:
       - ansible_os_family == "Debian"
-      - ubuntu2004cis_rule_1_5_2
+      - ubuntu2004cis_rule_1_4_3
   tags:
       - level1
       - scored
       - grub
       - patch
-      - rule_1.5.2
+      - rule_1.4.3
 
-- name: "SCORED | 1.5.2 | PATCH | Ensure permissions on bootloader config are configured for grub.conf"
+- name: "SCORED | 1.4.3 | PATCH | Ensure permissions on bootloader config are configured for grub.conf"
   file:
       path: "/boot/grub/grub.conf"
       owner: root
@@ -767,7 +767,7 @@
       - scored
       - grub
       - patch
-      - rule_1.5.2
+      - rule_1.4.3
 
 - name: "SCORED | 1.5.2 | PATCH | Ensure permissions on bootloader config are configured for menu.lst"
   file:
@@ -786,7 +786,7 @@
       - patch
       - rule_1.5.2
 
-- name: "SCORED | 1.5.3 | PATCH | Ensure authentication required for single user mode"
+- name: "SCORED | 1.4.4 | PATCH | Ensure authentication required for single user mode"
   shell: "set -o pipefail;
           if [ '{{ ubuntu2004cis_root_password }}' == 'random' ];
           then PASSWORD=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c24); else PASSWORD='{{ ubuntu2004cis_root_password }}';
@@ -795,15 +795,15 @@
   args:
       executable: /bin/bash
   when:
-      - ubuntu2004cis_rule_1_5_3
+      - ubuntu2004cis_rule_1_4_4
       - current_root_password.stdout | length > 0
   tags:
       - level1
       - scored
       - patch
-      - rule_1.5.3
+      - rule_1.4.4
 
-- name: "SCORED | 1.6.1 | PATCH | Ensure XD/NX support is enabled"
+- name: "SCORED | 1.5.1 | PATCH | Ensure XD/NX support is enabled"
   shell: |
       set -o pipefail;
       dmesg | grep -E "NX|XD" | grep " active"
@@ -811,15 +811,15 @@
       executable: /bin/bash
   changed_when: false
   when:
-      - ubuntu2004cis_rule_1_6_1
+      - ubuntu2004cis_rule_1_5_1
       - not ubuntu2004cis_skip_for_travis
   tags:
       - level1
       - scored
       - patch
-      - rule_1.6.1
+      - rule_1.5.1
 
-- name: "SCORED | 1.6.2 | PATCH | Ensure address space layout randomization (ASLR) is enabled"
+- name: "SCORED | 1.5.2 | PATCH | Ensure address space layout randomization (ASLR) is enabled"
   sysctl:
       name: kernel.randomize_va_space
       value: "2"
@@ -828,36 +828,36 @@
       sysctl_set: true
       ignoreerrors: true
   when:
-      - ubuntu2004cis_rule_1_6_2
+      - ubuntu2004cis_rule_1_5_2
   tags:
       - level1
       - scored
       - patch
       - sysctl
-      - rule_1.6.2
+      - rule_1.5.2
 
-- name: "SCORED | 1.6.3 | PATCH | Ensure prelink is disabled"
+- name: "SCORED | 1.5.3 | PATCH | Ensure prelink is not installed"
   command: prelink -ua
   when:
       - prelink_installed.rc == 0
-      - ubuntu2004cis_rule_1_6_3
+      - ubuntu2004cis_rule_1_5_3
   tags:
       - level1
       - scored
       - patch
-      - rule_1.6.3
+      - rule_1.5.3
 
-- name: "SCORED | 1.6.3 | PATCH | Ensure prelink is disabled"
+- name: "SCORED | 1.5.3 | PATCH | Ensure prelink is not installed"
   apt:
       name: prelink
       state: absent
   when:
-      - ubuntu2004cis_rule_1_6_3
+      - ubuntu2004cis_rule_1_5_3
   tags:
       - level1
       - scored
       - patch
-      - rule_1.6.3
+      - rule_1.5.3
 
 - name: "SCORED | 1.6.4 | PATCH | Ensure core dumps are restricted"
   sysctl:
