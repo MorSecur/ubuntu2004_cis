@@ -199,7 +199,7 @@
       - patch
       - rule_2.1.6
 
-- name: "SCORED | 2.1.7 | PATCH | Ensure NFS and RPC are not enabled"  # 2.1.7 states this is only NFS
+- name: "SCORED | 2.1.7 | PATCH | Ensure NFS is not enabled"  # 2.1.7 states this is only NFS
   service:
       name: nfs
       state: stopped
@@ -212,28 +212,9 @@
       - level1
       - scored
       - nfs
-      - rpc
       - services
       - patch
       - rule_2.1.7
-
-- name: "SCORED | 2.2.7 | PATCH | Ensure RPC is not enabled"  # Investigate
-  service:
-      name: rpcbind
-      state: stopped
-      enabled: false
-  when:
-      - not ubuntu2004cis_nfs_rpc_server
-      - rpcbind_service_status.stdout == "loaded"
-      - ubuntu2004cis_rule_2_2_7
-  tags:
-      - level1
-      - scored
-      - nfs
-      - rpc
-      - services
-      - patch
-      - rule_2.2.7
 
 - name: "SCORED | 2.1.8 | PATCH | Ensure DNS Server is not enabled"
   service:
